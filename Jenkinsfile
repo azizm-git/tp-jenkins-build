@@ -1,12 +1,22 @@
 node {
     def app
 
+    stage('Cleanup') {
+        sh 'docker rm -f nginx-aziz || true'
+    }
+
     stage('Clone') {
         checkout scm
     }
 
     stage('Build image') {
         app = docker.build("localhost:5000/nginx-aziz")
+    }
+
+    stage('Push image') {
+        docker.withRegistry('http://localhost:5000') {
+            app.push("latest")
+        }
     }
 
     stage('Run image') {
