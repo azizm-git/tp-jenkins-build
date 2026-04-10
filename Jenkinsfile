@@ -9,16 +9,11 @@ node {
         app = docker.build("localhost:5000/nginx-aziz")
     }
 
-    stage('Push image') {
-        docker.withRegistry('http://localhost:5000') {
-            app.push("latest")
-        }
-    }
-
     stage('Run image') {
-        docker.image('localhost:5000/nginx-aziz').withRun('-p 8090:80') { c ->
-            sh 'docker ps'
-            sh 'curl localhost:8090'
-        }
+        sh 'docker run -d -p 8090:80 --name nginx-aziz localhost:5000/nginx-aziz'
+        sh 'sleep 3'
+        sh 'curl localhost:8090'
+        sh 'docker stop nginx-aziz'
+        sh 'docker rm nginx-aziz'
     }
 }
